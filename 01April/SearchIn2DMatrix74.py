@@ -1,4 +1,5 @@
 def searchIna2Dmatrix(matrix,target):
+    # T.C: = O(m+n)
     if not matrix:
         return False
     row = 0
@@ -11,7 +12,7 @@ def searchIna2Dmatrix(matrix,target):
         else:
             row += 1
     return False
-
+# T.C: O(m*n)
     # for i in matrix:
     #     if target in i:
     #         return True
