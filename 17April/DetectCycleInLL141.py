@@ -9,12 +9,12 @@ class Solution:
         # curr = head
         # while curr:
         #     if curr in visited:
-        #         return True
+        #         count += 1
         #     visited.add(curr)
         #     curr = curr.next
         # return False
 
-        # Using Two pointer T.C = O(n)  and S.C = O(1)
+        # # Using Two pointer T.C = O(n)  and S.C = O(1)
         slow = head
         fast = head
         while fast  and fast.next:

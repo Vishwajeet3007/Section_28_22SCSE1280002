@@ -19,6 +19,7 @@ class Solution:
     def isPalindrome(self, head):
         self.current=head
         return self.recursion(head)
+    
 def build_linked_list(lst):
     if not lst:
         return None
