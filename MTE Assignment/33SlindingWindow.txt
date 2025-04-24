@@ -1,0 +1,28 @@
+33.Explain the sliding window technique and its applications in array problems.
+
+==>The sliding window technique is a powerful method used to solve problems involving 
+arrays or lists, especially when you're dealing with contiguous subarrays or substrings.
+ It's an optimization over brute force solutions and helps reduce time complexity 
+ significantly.
+
+==>The sliding window technique involves creating a window (a subarray or range)
+  that slides over the input array or list to examine different portions, usually
+   of a fixed or variable size. Instead of recalculating results for overlapping parts,
+    it updates the result by adding the new element and removing the old one as the 
+    window slides
+==>Key Components:
+Window size: Fixed or variable
+Start and end pointers: Define the current window
+Conditions: Based on problem constraints (e.g., max sum, no duplicates, etc.)
+
+==>Why Use It?
+Reduces time complexity from O(n²) to O(n) in many cases.
+Efficiently handles subarray or substring related problems.
+Avoids recomputation of repeated data
+
+==>🔧 Applications:
+1. Fixed-size window problems
+2. Variable-size window problems
+3. Longest substring without repeating characters
+4. Anagram detection in a string
+5. Maximum of all subarrays of size k
