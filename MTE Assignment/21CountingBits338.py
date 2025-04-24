@@ -11,3 +11,5 @@ def countBits(n):
             result[i] = result[i//2]
 
     return result 
+n = 5
+print(countBits(n))

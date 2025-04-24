@@ -10,6 +10,8 @@ def isPowerOfTwo(n):
         return True
     return (n % 2 == 0 ) and isPowerOfTwo(n//2)
 
-# Example
+
 n = 16
+print(isPowerOfTwo(n))
+n = 20
 print(isPowerOfTwo(n))
