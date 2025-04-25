@@ -1,0 +1,15 @@
+Qn : Generate all permutations of a given array. Write its algorithm, program. Find its
+time and space complexities. Explain with suitable example. 
+
+1. Permutations
+    Definition: A permutation is an arrangement of all or some elements of a set in a 
+    specific order.
+
+    ->Order matters
+    ->No repetition of elements
+    ->Length = original or shorter
+2. Subsets
+Definition:A subset is any combination of elements from a set, regardless of order.
+    ->Order doesn't matter
+    ->Each element is either included or not included
+    ->The total number of subsets of a set with n elements is 2^n
