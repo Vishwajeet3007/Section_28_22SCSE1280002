@@ -1,0 +1,22 @@
+Qn:Explain the concept of dynamic programming and its use in solving the maximum 
+subarray problem.
+
+Dynamic Programming is a method used in programming to solve complex problems by 
+breaking them down into smaller subproblems, solving each subproblem only once, 
+and storing their results (usually in a table or variables) so they don't need to be
+ recomputed.
+
+✅ It is mainly used when:
+The problem has overlapping subproblems (same subproblems get solved multiple times).
+The problem has an optimal substructure (the optimal solution can be built from optimal 
+solutions of its subproblems).
+
+-->How Dynamic Programming Helps in the Maximum Subarray Problem
+
+The Maximum Subarray Problem asks:
+->Find the contiguous subarray with the largest sum.
+
+->Now, notice:
+->To find the maximum subarray ending at index i, we can use the solution of the
+maximum subarray ending at i-1.
+-->So each subproblem depends on the previous one — perfect for dynamic programming!

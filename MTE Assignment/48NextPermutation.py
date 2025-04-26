@@ -1,4 +1,6 @@
 def nextPermutation(nums):
+    # Pivot == gola_index
+    
     n = len(nums)
     gola_index = -1
 

@@ -1,0 +1,14 @@
+Qn: Explain the concept of priority queues and their applications in algorithm design. 
+->A Priority Queue ensures important things are done first according to their priority, 
+not their arrival time.
+-> priority queue is a special type of queue where each element has a priority, and the element with the highest (or lowest) priority is served first — not necessarily the one that arrived first.
+i. In a normal queue: First-In-First-Out (FIFO).
+ii. In a priority queue: Highest priority goes first (not arrival order).
+
+Example:In an emergency room, patients are treated based on the seriousness of their
+ condition, not on the order they arrived.
+
+==>Applications of Priority Queues in Algorithm Design:
+1.Dijkstra's Algorithm(Finding the shortest path in a graph)
+2.Huffman Encoding(Data compression)
+3.CPU Scheduling(Multitasking operating systems)

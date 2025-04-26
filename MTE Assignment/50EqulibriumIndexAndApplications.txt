@@ -1,0 +1,19 @@
+Qn: Explain the concept of equilibrium index and its applications in array problems. 
+->An equilibrium index is like the perfect balancing point in an array.
+->It’s where the left and right sides weigh exactly the same!
+
+==>An equilibrium index in an array is an index i such that:
+->The sum of elements on the left of i is equal to the sum of elements on the right of i.
+
+✅Important points:
+The element at index i itself is not included in either left or right sum.
+There can be zero, one, or multiple equilibrium indices.
+
+Applications of Equilibrium Index in Array Problems:
+
+Application Area	                     Why Equilibrium Index Matters
+Load Balancing	                  Distribute tasks or weights equally across servers/systems.
+Financial Calculations	          Find balance points in profit/loss series.
+Game Development	              Balance health points, resource allocations.
+Partitioning Problems	          Split an array into two parts with equal sum for optimization tasks.
+Data Analysis	                  Find balanced cut-points in datasets.
