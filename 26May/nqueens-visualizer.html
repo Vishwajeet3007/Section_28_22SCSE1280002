@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>N-Queens Enhanced Visualizer</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 20px;
+    }
+    .board {
+      display: inline-grid;
+      margin-top: 20px;
+    }
+    .cell {
+      width: 45px;
+      height: 45px;
+      border: 1px solid #999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      transition: background 0.3s;
+    }
+    .white { background: #f8f8f8; }
+    .gray { background: #ccc; }
+    .place { background-color: #b2f2bb !important; }
+    .unsafe { background-color: #ffadad !important; }
+    .backtrack { background-color: #a5d8ff !important; }
+
+    .controls {
+      margin-bottom: 20px;
+    }
+    button, input {
+      margin: 5px;
+      padding: 6px 12px;
+      font-size: 16px;
+    }
+
+    #log {
+      margin-top: 20px;
+      font-family: monospace;
+      color: #333;
+      max-width: 500px;
+      margin-left: auto;
+      margin-right: auto;
+      text-align: left;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>N-Queens Step-by-Step Visualizer</h1>
+
+  <div class="controls">
+    <input type="number" id="nInput" value="4" min="4" />
+    <button onclick="start()">Start</button>
+    <button onclick="nextStep()">Next Step</button>
+    <button onclick="toggleAuto()">Auto Play</button>
+    <label>Speed:</label>
+    <input type="number" id="speed" value="500" min="100" max="2000" />
+  </div>
+
+  <div id="stepCount">Step: 0</div>
+  <div id="boardContainer"></div>
+  <div id="log"></div>
+
+  <script>
+    let steps = [], stepIndex = 0, n = 4;
+    let autoTimer = null;
+
+    function createBoard(n) {
+      return Array.from({ length: n }, () => Array(n).fill('.'));
+    }
+
+    function clone(board) {
+      return board.map(row => row.slice());
+    }
+
+    function isSafe(board, row, col) {
+      for (let i = 0; i < col; i++) if (board[row][i] === 'Q') return false;
+      for (let i = row, j = col; i >= 0 && j >= 0; i--, j--) if (board[i][j] === 'Q') return false;
+      for (let i = row, j = col; i < n && j >= 0; i++, j--) if (board[i][j] === 'Q') return false;
+      return true;
+    }
+
+    function solve(col, board) {
+      if (col === n) {
+        steps.push({ board: clone(board), row: -1, col: -1, type: 'done', msg: 'Solution found ✅' });
+        return;
+      }
+
+      for (let row = 0; row < n; row++) {
+        let safe = isSafe(board, row, col);
+        steps.push({ board: clone(board), row, col, type: safe ? 'place' : 'unsafe', msg: `Trying (${row}, ${col}) ➜ ${safe ? 'Safe ✅' : 'Not Safe ❌'}` });
+
+        if (safe) {
+          board[row][col] = 'Q';
+          solve(col + 1, board);
+          board[row][col] = '.';
+          steps.push({ board: clone(board), row, col, type: 'backtrack', msg: `Backtracking from (${row}, ${col})` });
+        }
+      }
+    }
+
+    function render(step) {
+      const container = document.getElementById("boardContainer");
+      container.innerHTML = "";
+      const board = document.createElement("div");
+      board.className = "board";
+      board.style.gridTemplateColumns = `repeat(${n}, 45px)`;
+
+      for (let i = 0; i < n; i++) {
+        for (let j = 0; j < n; j++) {
+          const cell = document.createElement("div");
+          cell.className = `cell ${(i + j) % 2 === 0 ? 'white' : 'gray'}`;
+          if (step.board[i][j] === 'Q') cell.textContent = '♛';
+          if (i === step.row && j === step.col) {
+            if (step.type === 'place') cell.classList.add('place');
+            if (step.type === 'unsafe') cell.classList.add('unsafe');
+            if (step.type === 'backtrack') cell.classList.add('backtrack');
+          }
+          board.appendChild(cell);
+        }
+      }
+
+      container.appendChild(board);
+      document.getElementById("log").textContent = step.msg;
+      document.getElementById("stepCount").textContent = `Step: ${stepIndex + 1}/${steps.length}`;
+    }
+
+    function start() {
+      n = parseInt(document.getElementById("nInput").value);
+      steps = []; stepIndex = 0;
+      const board = createBoard(n);
+      solve(0, board);
+      render(steps[0]);
+      stopAuto();
+    }
+
+    function nextStep() {
+      if (stepIndex < steps.length - 1) {
+        stepIndex++;
+        render(steps[stepIndex]);
+      } else {
+        stopAuto();
+      }
+    }
+
+    function toggleAuto() {
+      if (autoTimer) {
+        stopAuto();
+      } else {
+        autoTimer = setInterval(() => {
+          nextStep();
+        }, parseInt(document.getElementById("speed").value));
+      }
+    }
+
+    function stopAuto() {
+      clearInterval(autoTimer);
+      autoTimer = null;
+    }
+
+    window.onload = () => start();
+  </script>
+
+</body>
+</html>

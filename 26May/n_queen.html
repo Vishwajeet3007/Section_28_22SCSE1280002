@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>N-Queens Visualizer with Multiple Solutions</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+    background: #f0f2f5;
+    text-align: center;
+  }
+  #board {
+    margin: 20px auto;
+    display: grid;
+    border: 2px solid #333;
+    max-width: 90vw;
+  }
+  .cell {
+    width: 40px;
+    height: 40px;
+    line-height: 40px;
+    font-size: 28px;
+    user-select: none;
+  }
+  .white {
+    background-color: #eee;
+  }
+  .black {
+    background-color: #777;
+    color: white;
+  }
+  .queen {
+    color: crimson;
+  }
+  #controls {
+    margin-top: 15px;
+  }
+  button, input[type=number], #stepSlider {
+    font-size: 16px;
+    padding: 6px 12px;
+    margin: 6px 4px;
+  }
+  #status {
+    margin-top: 15px;
+    font-weight: bold;
+  }
+</style>
+</head>
+<body>
+
+<h2>N-Queens Visualizer (Step-by-Step with Multiple Solutions)</h2>
+
+<label for="boardSize">Board size (N): </label>
+<input type="number" id="boardSize" min="4" max="20" value="8" />
+<button id="startBtn">Start</button>
+
+<div id="board"></div>
+
+<div id="controls">
+  <button id="prevSolutionBtn" disabled>Previous Solution</button>
+  <button id="nextSolutionBtn" disabled>Next Solution</button>
+  <br />
+  <button id="playPauseBtn" disabled>Play</button>
+  <button id="resetBtn" disabled>Reset</button>
+  <br />
+  <input type="range" id="stepSlider" min="0" value="0" disabled />
+</div>
+
+<div id="status"></div>
+
+<script>
+  const boardDiv = document.getElementById('board');
+  const startBtn = document.getElementById('startBtn');
+  const playPauseBtn = document.getElementById('playPauseBtn');
+  const resetBtn = document.getElementById('resetBtn');
+  const stepSlider = document.getElementById('stepSlider');
+  const statusDiv = document.getElementById('status');
+  const boardSizeInput = document.getElementById('boardSize');
+  const prevSolutionBtn = document.getElementById('prevSolutionBtn');
+  const nextSolutionBtn = document.getElementById('nextSolutionBtn');
+
+  let N = 8;
+  let steps = []; // Steps of current solution (array of {board, msg})
+  let solutions = []; // All solutions steps arrays
+  let currentSolutionIndex = 0;
+  let currentStepIndex = 0;
+  let timer = null;
+  let playing = false;
+
+  // Create empty NxN board
+  function emptyBoard(n) {
+    return Array.from({ length: n }, () => Array(n).fill(0));
+  }
+
+  // Clone board array (deep copy)
+  function cloneBoard(board) {
+    return board.map(row => row.slice());
+  }
+
+  // Check if placing queen at (row, col) is safe
+  function isSafe(board, row, col) {
+    for (let c = 0; c < col; c++) {
+      if (board[row][c] === 1) return false;
+    }
+    for (let r = row, c = col; r >= 0 && c >= 0; r--, c--) {
+      if (board[r][c] === 1) return false;
+    }
+    for (let r = row, c = col; r < N && c >= 0; r++, c--) {
+      if (board[r][c] === 1) return false;
+    }
+    return true;
+  }
+
+  // Solve N-Queens recursively and record steps per solution
+  function solveNQueens(col, board, currentSteps) {
+    if (col === N) {
+      currentSteps.push({ board: cloneBoard(board), msg: 'Solution found!' });
+      solutions.push(currentSteps.slice());
+      return;
+    }
+    for (let row = 0; row < N; row++) {
+      currentSteps.push({ board: cloneBoard(board), msg: `Trying row ${row + 1}, col ${col + 1}` });
+      if (isSafe(board, row, col)) {
+        board[row][col] = 1;
+        currentSteps.push({ board: cloneBoard(board), msg: `Placed queen at row ${row + 1}, col ${col + 1}` });
+        solveNQueens(col + 1, board, currentSteps);
+        board[row][col] = 0;
+        currentSteps.push({ board: cloneBoard(board), msg: `Backtracked from row ${row + 1}, col ${col + 1}` });
+      } else {
+        currentSteps.push({ board: cloneBoard(board), msg: `Cannot place queen at row ${row + 1}, col ${col + 1}` });
+      }
+    }
+  }
+
+  // Render board and status message for given step index
+  function renderStep(index) {
+    const step = steps[index];
+    if (!step) return;
+    const board = step.board;
+    boardDiv.innerHTML = '';
+    boardDiv.style.gridTemplateColumns = `repeat(${N}, 40px)`;
+    boardDiv.style.width = `${N * 40}px`;
+    for (let r = 0; r < N; r++) {
+      for (let c = 0; c < N; c++) {
+        const cell = document.createElement('div');
+        cell.classList.add('cell');
+        cell.classList.add((r + c) % 2 === 0 ? 'white' : 'black');
+        if (board[r][c] === 1) {
+          cell.innerHTML = '♕';
+          cell.classList.add('queen');
+        }
+        boardDiv.appendChild(cell);
+      }
+    }
+    statusDiv.textContent = `Solution ${currentSolutionIndex + 1}/${solutions.length} | Step ${index + 1}/${steps.length}: ${step.msg}`;
+    stepSlider.value = index;
+    currentStepIndex = index;
+  }
+
+  // Play animation forward automatically
+  function play() {
+    if (playing) return;
+    playing = true;
+    playPauseBtn.textContent = 'Pause';
+    timer = setInterval(() => {
+      if (currentStepIndex < steps.length - 1) {
+        currentStepIndex++;
+        renderStep(currentStepIndex);
+      } else {
+        pause();
+      }
+    }, 500);
+  }
+
+  // Pause animation
+  function pause() {
+    playing = false;
+    playPauseBtn.textContent = 'Play';
+    clearInterval(timer);
+  }
+
+  // Reset animation to first step
+  function reset() {
+    pause();
+    renderStep(0);
+  }
+
+  // Load a solution by index
+  function loadSolution(index) {
+    pause();
+    currentSolutionIndex = index;
+    steps = solutions[index];
+    stepSlider.max = steps.length - 1;
+    stepSlider.value = 0;
+    renderStep(0);
+    prevSolutionBtn.disabled = index === 0;
+    nextSolutionBtn.disabled = index === solutions.length - 1;
+  }
+
+  // Event Listeners
+
+  startBtn.addEventListener('click', () => {
+    N = parseInt(boardSizeInput.value);
+    if (N < 4 || N > 20) {
+      alert('Please enter board size between 4 and 20.');
+      return;
+    }
+    solutions = [];
+    currentSolutionIndex = 0;
+    steps = [];
+    let board = emptyBoard(N);
+    solveNQueens(0, board, []);
+    if (solutions.length === 0) {
+      alert('No solutions found.');
+      return;
+    }
+    loadSolution(0);
+    stepSlider.disabled = false;
+    playPauseBtn.disabled = false;
+    resetBtn.disabled = false;
+    prevSolutionBtn.disabled = true;
+    nextSolutionBtn.disabled = solutions.length <= 1;
+  });
+
+  playPauseBtn.addEventListener('click', () => {
+    if (playing) pause();
+    else play();
+  });
+
+  resetBtn.addEventListener('click', () => {
+    reset();
+  });
+
+  stepSlider.addEventListener('input', () => {
+    pause();
+    renderStep(parseInt(stepSlider.value));
+  });
+
+  prevSolutionBtn.addEventListener('click', () => {
+    if (currentSolutionIndex > 0) loadSolution(currentSolutionIndex - 1);
+  });
+
+  nextSolutionBtn.addEventListener('click', () => {
+    if (currentSolutionIndex < solutions.length - 1) loadSolution(currentSolutionIndex + 1);
+  });
+
+  // Initialize empty board on load
+  boardDiv.style.gridTemplateColumns = `repeat(${N}, 40px)`;
+  boardDiv.style.width = `${N * 40}px`;
+  boardDiv.innerHTML = 'Set board size and click Start to begin';
+</script>
+
+</body>
+</html>

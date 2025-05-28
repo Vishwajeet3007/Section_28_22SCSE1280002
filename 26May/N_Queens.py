@@ -33,4 +33,4 @@ def print_board(board):
         print(" ".join('Q' if cell else '.' for cell in row))
     print()
 
-n_queens(4)
+n_queens(6)

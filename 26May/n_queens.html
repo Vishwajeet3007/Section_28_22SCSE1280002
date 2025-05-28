@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>N-Queens Visualizer</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 20px;
+    }
+    .board {
+      display: inline-grid;
+      margin-top: 20px;
+    }
+    .cell {
+      width: 40px;
+      height: 40px;
+      border: 1px solid #ccc;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      transition: background-color 0.3s;
+    }
+    .white { background-color: #f0f0f0; }
+    .gray { background-color: #bbb; }
+    .place { background-color: #b2f2bb !important; }
+    .remove { background-color: #ffa8a8 !important; }
+
+    .controls {
+      margin-bottom: 20px;
+    }
+    input {
+      width: 60px;
+      padding: 5px;
+      margin-right: 10px;
+    }
+    button {
+      padding: 6px 12px;
+      margin-right: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>N-Queens Step-by-Step Visualizer</h1>
+  <div class="controls">
+    <input type="number" id="nInput" value="4" min="4" />
+    <button onclick="start()">Start</button>
+    <button onclick="nextStep()">Next Step</button>
+    <button onclick="toggleAuto()">Auto Play</button>
+    <label for="speed">Speed (ms):</label>
+    <input type="number" id="speed" value="500" min="100" />
+  </div>
+
+  <div id="boardContainer"></div>
+
+  <script>
+    let steps = [];
+    let stepIndex = 0;
+    let n = 4;
+    let autoPlay = false;
+    let autoTimer = null;
+
+    function createEmptyBoard(n) {
+      return Array.from({ length: n }, () => Array(n).fill('.'));
+    }
+
+    function cloneBoard(board) {
+      return board.map(row => row.slice());
+    }
+
+    function isSafe(board, row, col, n) {
+      for (let i = 0; i < col; i++) if (board[row][i] === 'Q') return false;
+      for (let i = row, j = col; i >= 0 && j >= 0; i--, j--) if (board[i][j] === 'Q') return false;
+      for (let i = row, j = col; i < n && j >= 0; i++, j--) if (board[i][j] === 'Q') return false;
+      return true;
+    }
+
+    function solve(col, board, n) {
+      if (col === n) {
+        steps.push({ board: cloneBoard(board), move: 'done' });
+        return true;
+      }
+
+      for (let i = 0; i < n; i++) {
+        if (isSafe(board, i, col, n)) {
+          board[i][col] = 'Q';
+          steps.push({ board: cloneBoard(board), move: 'place', row: i, col: col });
+
+          if (solve(col + 1, board, n)) return true;
+
+          board[i][col] = '.';
+          steps.push({ board: cloneBoard(board), move: 'remove', row: i, col: col });
+        }
+      }
+
+      return false;
+    }
+
+    function renderBoard(step) {
+      const { board, move, row, col } = step;
+      const container = document.getElementById("boardContainer");
+      container.innerHTML = "";
+      const grid = document.createElement("div");
+      grid.className = "board";
+      grid.style.gridTemplateColumns = `repeat(${n}, 40px)`;
+
+      for (let i = 0; i < n; i++) {
+        for (let j = 0; j < n; j++) {
+          const cell = document.createElement("div");
+          cell.className = `cell ${(i + j) % 2 === 0 ? 'white' : 'gray'}`;
+
+          if (i === row && j === col) {
+            cell.classList.add(move === 'place' ? 'place' : move === 'remove' ? 'remove' : '');
+          }
+
+          if (board[i][j] === 'Q') {
+            cell.textContent = '♛';
+          }
+          grid.appendChild(cell);
+        }
+      }
+
+      container.appendChild(grid);
+    }
+
+    function start() {
+      n = parseInt(document.getElementById("nInput").value);
+      steps = [];
+      stepIndex = 0;
+      const board = createEmptyBoard(n);
+      solve(0, board, n);
+      if (steps.length > 0) {
+        renderBoard(steps[0]);
+      }
+      stopAuto(); // Reset autoplay
+    }
+
+    function nextStep() {
+      if (stepIndex + 1 < steps.length) {
+        stepIndex++;
+        renderBoard(steps[stepIndex]);
+      } else {
+        stopAuto();
+      }
+    }
+
+    function toggleAuto() {
+      autoPlay = !autoPlay;
+      if (autoPlay) {
+        autoTimer = setInterval(() => {
+          nextStep();
+          if (stepIndex + 1 >= steps.length) {
+            stopAuto();
+          }
+        }, parseInt(document.getElementById("speed").value));
+      } else {
+        stopAuto();
+      }
+    }
+
+    function stopAuto() {
+      autoPlay = false;
+      if (autoTimer) {
+        clearInterval(autoTimer);
+        autoTimer = null;
+      }
+    }
+  </script>
+
+</body>
+</html>
