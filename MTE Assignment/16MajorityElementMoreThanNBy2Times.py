@@ -12,7 +12,7 @@ def majorityElement(nums):
     for i, num in enumerate(nums):
         if count == 0:
             candidate = num
-        if candidate == num:
+        elif candidate == num:
             count += 1
         else:
             count -= 1
