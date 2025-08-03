@@ -1,15 +1,15 @@
 def SubarraySumEqualK(nums,k):
 # Brute Force T.C=O(N*N) S.C = O(1)
 
-    # n = len(nums)
-    # count = 0
-    # for start in range(n):
-    #     total = 0
-    #     for end in range(start,n):
-    #         total += nums[end]
-    #         if total == k:
-    #             count += 1
-    # return count
+    n = len(nums)
+    count = 0
+    for start in range(n):
+        total = 0
+        for end in range(start,n):
+            total += nums[end]
+            if total == k:
+                count += 1
+    return count
 
     # Using Hashing T.C=S.C=O(n)
     count = 0

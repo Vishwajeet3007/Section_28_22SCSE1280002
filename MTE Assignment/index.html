@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Contact Form</title>
+  <style>
+    body { font-family: Arial; margin: 20px; }
+    #message { color: red; margin-top: 10px; }
+    #success { color: green; margin-top: 10px; }
+  </style>
+</head>
+<body>
+
+  <h2>Contact Us</h2>
+
+  <form id="contactForm">
+    Name: <input type="text" id="name"><br><br>
+    Email: <input type="text" id="email"><br><br>
+    Message: <textarea id="userMessage"></textarea><br><br>
+    <button type="submit">Submit</button>
+  </form>
+
+  <div id="message"></div>
+  <div id="success"></div>
+
+  <script>
+    // Handle form submit
+    document.getElementById("contactForm").addEventListener("submit", function(event) {
+      event.preventDefault(); // Stop form from reloading the page
+
+      // Get values from inputs
+      let name = document.getElementById("name").value.trim();
+      let email = document.getElementById("email").value.trim();
+      let message = document.getElementById("userMessage").value.trim();
+
+      // DOM Elements to update
+      let errorDiv = document.getElementById("message");
+      let successDiv = document.getElementById("success");
+
+      // Clear previous messages
+      errorDiv.innerHTML = "";
+      successDiv.innerHTML = "";
+
+      // Simple validation
+      if (name === "" || email === "" || message === "") {
+        errorDiv.innerHTML = "All fields are required!";
+        return;
+      }
+
+      if (!validateEmail(email)) {
+        errorDiv.innerHTML = "Please enter a valid email!";
+        return;
+      }
+
+      // If all good
+      successDiv.innerHTML = "Thank you, " + name + "! Your message was sent.";
+      
+      // Optional: Clear form
+      document.getElementById("contactForm").reset();
+    });
+
+    // Email format checker using Regex
+    function validateEmail(email) {
+      let pattern = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/;
+      return pattern.test(email);
+    }
+  </script>
+
+</body>
+</html>
